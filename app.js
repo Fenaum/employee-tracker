@@ -2,9 +2,8 @@
 const inquirer = require("inquirer");
 const connection = require("./config/connection.js");
 
-// Function to start the application
+// Function to start the application and display menu
 function start() {
-  // Display the main menu
   inquirer
     .prompt({
       name: "action",
@@ -22,7 +21,6 @@ function start() {
       ],
     })
     .then((answer) => {
-      // switch options so users can have choices and get responses accordingly
       switch (answer.action) {
         case "View all departments":
           viewDepartments();
@@ -55,22 +53,18 @@ function start() {
 
 // Function to view all departments
 function viewDepartments() {
-  // Retrieve all departments from the database
   connection.query("SELECT * FROM departments", (err, res) => {
     if (err) throw err;
 
-    // Display the departments in a formatted table
     console.log("\nDEPARTMENTS");
     console.table(res);
 
-    // Go back to the main menu
     start();
   });
 }
 
 // Function to view all roles
 function viewRoles() {
-  // Retrieve all roles with department information from the database
   const query = `
     SELECT roles.id, roles.title, roles.salary, departments.name AS department
     FROM roles
@@ -80,18 +74,15 @@ function viewRoles() {
   connection.query(query, (err, res) => {
     if (err) throw err;
 
-    // Display the roles in a formatted table
     console.log("\nROLES");
     console.table(res);
 
-    // Go back to the main menu
     start();
   });
 }
 
 // Function to view all employees
 function viewEmployees() {
-  // Retrieve all employees with role and department information from the database
   const query = `
     SELECT employees.id, employees.first_name, employees.last_name, roles.title, departments.name AS department, roles.salary, CONCAT(manager.first_name, ' ', manager.last_name) AS manager
     FROM employees
@@ -103,18 +94,15 @@ function viewEmployees() {
   connection.query(query, (err, res) => {
     if (err) throw err;
 
-    // Display the employees in a formatted table
     console.log("\nEMPLOYEES");
     console.table(res);
 
-    // Go back to the main menu
     start();
   });
 }
 
-// Function to add a department
+//Function to add a department
 function addDepartment() {
-  // Prompt the user to enter the name of the department
   inquirer
     .prompt({
       name: "departmentName",
@@ -122,7 +110,6 @@ function addDepartment() {
       message: "Enter the name of the department:",
     })
     .then((answer) => {
-      // Insert the new department into the database
       connection.query(
         "INSERT INTO departments SET ?",
         { name: answer.departmentName },
@@ -130,7 +117,6 @@ function addDepartment() {
           if (err) throw err;
           console.log("Department added successfully.");
 
-          // Go back to the main menu
           start();
         }
       );
@@ -139,7 +125,6 @@ function addDepartment() {
 
 // Function to add a role
 function addRole() {
-  // Prompt the user for role details
   inquirer
     .prompt([
       {
@@ -159,7 +144,6 @@ function addRole() {
       },
     ])
     .then((answers) => {
-      // Insert the new role into the database
       connection.query(
         "INSERT INTO roles SET ?",
         {
@@ -171,7 +155,6 @@ function addRole() {
           if (err) throw err;
           console.log("Role added successfully.");
 
-          // Go back to the main menu
           start();
         }
       );
@@ -180,7 +163,6 @@ function addRole() {
 
 // Function to add an employee
 function addEmployee() {
-  // Prompt the user for employee details
   inquirer
     .prompt([
       {
@@ -205,7 +187,6 @@ function addEmployee() {
       },
     ])
     .then((answers) => {
-      // Insert the new employee into the database
       connection.query(
         "INSERT INTO employees SET ?",
         {
@@ -218,7 +199,6 @@ function addEmployee() {
           if (err) throw err;
           console.log("Employee added successfully.");
 
-          // Go back to the main menu
           start();
         }
       );
@@ -227,11 +207,9 @@ function addEmployee() {
 
 // Function to update an employee role
 function updateEmployeeRole() {
-  // Retrieve the list of employees from the database
   connection.query("SELECT * FROM employees", (err, res) => {
     if (err) throw err;
 
-    // Prompt the user to select an employee
     inquirer
       .prompt([
         {
@@ -250,7 +228,6 @@ function updateEmployeeRole() {
         },
       ])
       .then((answers) => {
-        // Update the employee's role in the database
         connection.query(
           "UPDATE employees SET ? WHERE ?",
           [{ role_id: answers.newRoleId }, { id: answers.employeeId }],
@@ -258,7 +235,6 @@ function updateEmployeeRole() {
             if (err) throw err;
             console.log("Employee role updated successfully.");
 
-            // Go back to the main menu
             start();
           }
         );
