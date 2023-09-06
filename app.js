@@ -242,5 +242,4 @@ function updateEmployeeRole() {
   });
 }
 
-// Start the application
 start();
